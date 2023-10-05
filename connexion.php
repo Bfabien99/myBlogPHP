@@ -6,7 +6,7 @@
         $password = $_POST['password'];
 
         // On se connecte à la base de donnée
-        $connexion = mysqli_connect('localhost','root','','blog');
+        $connexion = mysqli_connect('localhost','root','','myblogphp');
         // On vérifie si la connexion s'est bien passée
         if(!$connexion)
         { 

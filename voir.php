@@ -3,7 +3,7 @@
         // Récupération de l'id
         $id = $_GET['article_id'];
         // On se connecte à la base de donnée
-        $connexion = mysqli_connect('localhost','root','','blog');
+        $connexion = mysqli_connect('localhost','root','','myblogphp');
         // On vérifie si la connexion s'est bien passée
         if(!$connexion)
         { 
@@ -18,6 +18,13 @@
         if($sql_result){
             // On récupère les données dans un tableau associatif
             $article = mysqli_fetch_assoc($sql_result);
+            
+            if($article){
+                // On récupère les informations de l'utilisateur ayant posté l'article à partir de la clé 'user_id'
+                $user_id = $article['user_id'];
+                $user_sql_result = mysqli_query($connexion, "SELECT * FROM User WHERE id = '$user_id'");
+                $user = mysqli_fetch_assoc($user_sql_result);
+            }
         }else{
             echo "OOps! Une erreur est survenue, veuillez réessayer plus tard!";
         }
@@ -213,30 +220,24 @@
         <div id="content">
             <?php if(!empty($article)):?>
             <div class="article">
-                <h3 class="title">Mon Article 1</h3>
-                <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
+                <h3 class="title"><?php echo $article['title'];?></h3>
+                <img src="<?php echo $article['image'];?>"
                     alt="">
                 <div class="description">
-                    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maiores, libero? Ipsa magnam, eaque
-                        consectetur fuga esse accusamus voluptatem, laudantium quidem nulla nihil maiores iure
-                        veniam, amet ratione facere expedita. Perspiciatis.</p>
+                    <p><?php echo $article['description'];?></p>
                 </div>
                 <hr>
                 <div id="acontent">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque vitae nemo quod voluptatem ex nesciunt excepturi et cupiditate quos optio eos facere eligendi amet est ad nulla nisi modi numquam, reprehenderit tenetur provident sit architecto illo assumenda? Excepturi velit iste facere aspernatur libero est natus, nesciunt sit incidunt porro accusantium.</p>
-                    <p>Esse, repellat voluptates. Expedita corrupti, modi quaerat quisquam magnam itaque cum. Ut impedit unde minus officia delectus aliquam perferendis amet ducimus praesentium fugiat deserunt nemo suscipit asperiores esse aliquid, veniam autem, officiis itaque enim rem necessitatibus. Illo, esse. Maiores modi non animi officiis quos nam blanditiis libero eveniet temporibus voluptates.</p>
-                    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quibusdam delectus error autem debitis placeat porro reiciendis iste optio aperiam corporis reprehenderit, ad aspernatur, fuga obcaecati. Labore id quasi veritatis esse libero, a placeat, ducimus suscipit, iure vero quod asperiores illo error. Voluptate, sunt pariatur consectetur cumque ipsam molestiae? Ullam, dignissimos quaerat? Laboriosam in quisquam quod voluptatum facere debitis, corporis excepturi quo maxime vitae, placeat cum veritatis exercitationem nihil quia impedit? Enim, dolore.</p>
-                    <p>Suscipit laborum aliquam nulla laboriosam tenetur, minus velit corrupti magni nesciunt repellendus, rerum perspiciatis vel repudiandae. Earum odit ipsum natus obcaecati facere reiciendis mollitia porro, sequi tempore similique enim incidunt delectus consequuntur quidem reprehenderit ipsa placeat. Omnis, magni. Vero, corrupti odio illo repudiandae quia temporibus vitae dolores consectetur beatae recusandae? Itaque, dolor voluptate in quo obcaecati quaerat voluptatibus quae ducimus, quidem laudantium, officiis accusamus sapiente illum doloremque fugit inventore labore porro assumenda!</p>
-                    <p>Explicabo eius ad quidem! Esse nulla incidunt, doloribus animi ut facere voluptatem sit deleniti repellat quo. Ducimus harum cumque reiciendis exercitationem ad porro nemo itaque pariatur a earum! Nostrum corporis tenetur, expedita sunt a, quo vel aperiam earum iusto iste minus inventore facilis accusamus. Recusandae ex sequi mollitia itaque accusantium ea repellendus velit consequatur fugit amet fuga suscipit, hic, aliquid, cumque odit eum omnis. Ratione aliquid possimus, exercitationem magnam id nostrum praesentium.</p>
+                    <p><?php echo $article['description'];?></p>
                 </div>
                 <div class="details">
-                    <p class="name">Ecrit par : Brou fabien</p>
-                    <p class="date">Le Mardi 10 0ctobre 2023</p>
+                    <p class="name">Ecrit par : <?php echo $user['firstname'].' '.$user['lastname'];?></p>
+                    <p class="date"><?php echo date('l d F Y',strtotime($article['date']));?></p>
                 </div>
             </div>
             <?php else:?>
                 <div class="empty">
-                    <p>Aucun article</p>
+                    <h4><span style='color:#f97586'>Aucun article trouvé !</span></h4>
                 </div>
             <?php endif; ?>
         </div>

@@ -1,15 +1,7 @@
 <?php
-    // On vérifie si les champs ne sont pas vides
-    if(!empty($_POST['firstname']) && !empty($_POST['lastname']) && !empty($_POST['sex']) && !empty($_POST['email']) && !empty($_POST['password']) && !empty($_POST['cpassword'])){
-        // On récupère les données postées
-        $firstname = $_POST['firstname'];
-        $lastname = $_POST['lastname'];
-        $img_url = $_POST['img_url'];
-        $sex = $_POST['sex'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $cpassword = $_POST['cpassword'];
-
+    if(!empty($_GET['article_id'])){
+        // Récupération de l'id
+        $id = $_GET['article_id'];
         // On se connecte à la base de donnée
         $connexion = mysqli_connect('localhost','root','','myblogphp');
         // On vérifie si la connexion s'est bien passée
@@ -18,12 +10,21 @@
             die('Erreur de connexion à la Base de Donnée');
         }
 
-        $req = "INSERT INTO User(firstname, lastname, image, sex, email, password) ";
-        $req .= "VALUES('$firstname', '$lastname', '$img_url', '$sex', '$email', '$password')";
+        // On lance la requête de sélection des articles
+        $req = "SELECT * FROM Article WHERE id = '$id'";
 
+        // On exécute la requête
         $sql_result = mysqli_query($connexion, $req);
         if($sql_result){
-            echo "Incription validé!";
+            // On récupère les données dans un tableau associatif
+            $article = mysqli_fetch_assoc($sql_result);
+            
+            if($article){
+                // On récupère les informations de l'utilisateur ayant posté l'article à partir de la clé 'user_id'
+                $user_id = $article['user_id'];
+                $user_sql_result = mysqli_query($connexion, "SELECT * FROM User WHERE id = '$user_id'");
+                $user = mysqli_fetch_assoc($user_sql_result);
+            }
         }else{
             echo "OOps! Une erreur est survenue, veuillez réessayer plus tard!";
         }
@@ -137,46 +138,51 @@
             max-width: 1200px;
         }
 
-        #content form {
-            width: 100%;
-            max-width: 500px;
+        #content .article{
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 900px;
             gap: 1.5em;
         }
 
-        #content form .group {
-            display: flex;
-            flex-direction: column;
-        }
-        #content form label {
-            color: #261c85;
-            width: fit-content;
-        }
-        #content form input{
-            border: none;
-            outline: none;
-            border: 1px solid #d4d4d4;
-            padding: 10px;
-            resize: none;
-        }
-        #content form input[type='submit']{
-            cursor: pointer;
-        }
-        #content form input[type='submit'] {
-            width: 100%;
-            max-width: fit-content;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 0 auto;
-            background-color: #261c85;
-            color: #fff;
+        #content .article .title{
+            text-transform: uppercase;
             text-align: center;
         }
-        #content form input[type='submit']:hover {
-            background-color: #3f2fce;
-            border: 1px solid #3f2fce;
+
+        #content .article img{
+            width: 100%;
+            margin: 0 auto;
         }
+
+        #content .article p{
+            text-align: justify;
+        }
+
+        #content .article .description{
+            padding: 10px;
+            font-size: 1.2em;
+            font-weight: 900;
+            color: #333;
+        }
+
+        #acontent{
+            font-size: 1.2em;
+            font-weight: 400;
+            display: flex;
+            flex-direction: column;
+            gap: .3em;
+        }
+
+        #content .article .details{
+            width: 100%;
+            display: flex;
+            padding: 5px;
+            justify-content: space-between;
+            font-weight: 700;
+        }
+
 
         @media screen and (max-width: 930px) {
             header {
@@ -201,50 +207,40 @@
     <header>
         <a class="logo" href="">myBlog</a>
         <ul>
+            <li>Brou Fabien</li>
             <li><a href="./">Accueil</a></li>
             <li><a href="">Catégories</a></li>
-            <li><a href="connexion.php">Connexion</a></li>
+            <li><a href="../">Deconnexion</a></li>
             <form action="" method="post">
                 <input type="search" name="search" id="search" placeholder="rechercher">
             </form>
-            <li><a href="inscription.php" class="inscription">Inscription</a></li>
+            <li><a href="./dashboard/dashboard.php" class="inscription">Dashboard</a></li>
         </ul>
     </header>
     <main>
         <div id="content">
-            <h3>Inscription</h3>
-            <form action="" method="post">
-                <div class="group">
-                    <label for="firstname">Nom</label>
-                    <input type="text" name="firstname" id="firstname" placeholder="John">
+            <?php if(!empty($article)):?>
+            <div class="article">
+                <h3 class="title"><?php echo $article['title'];?></h3>
+                <img src="<?php echo $article['image'];?>"
+                    alt="">
+                <div class="description">
+                    <p><?php echo $article['description'];?></p>
                 </div>
-                <div class="group">
-                    <label for="lastname">Prénoms</label>
-                    <input type="text" name="lastname" id="lastname" placeholder="Doe Smith">
+                <hr>
+                <div id="acontent">
+                    <p><?php echo $article['description'];?></p>
                 </div>
-                <div class="group">
-                    <label for="img_url">Lien de la photo</label>
-                    <input type="url" name="img_url" id="img_url" placeholder="https://images.unsplash.com/photo-1696185082767-29f8095a22a9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwyMHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=700&q=60">
+                <div class="details">
+                    <p class="name">Ecrit par : <?php echo $user['firstname'].' '.$user['lastname'];?></p>
+                    <p class="date"><?php echo date('l d F Y',strtotime($article['date']));?></p>
                 </div>
-                <div class="group">
-                    <label for="sex">Sex</label>
-                    <span><input type="radio" name="sex" value="M" id="sex">M</span>
-                    <span><input type="radio" name="sex" value="F">F</span>
+            </div>
+            <?php else:?>
+                <div class="empty">
+                    <h4><span style='color:#f97586'>Aucun article trouvé !</span></h4>
                 </div>
-                <div class="group">
-                    <label for="email">Email</label>
-                    <input type="text" name="email" id="email" placeholder="johnDoe@ex.ci">
-                </div>
-                <div class="group">
-                    <label for="password">Mot de passe</label>
-                    <input type="text" name="password" id="password" placeholder="mot de passe">
-                </div>
-                <div class="group">
-                    <label for="cpassword">Confirmer le mot de passe</label>
-                    <input type="text" name="cpassword" id="cpassword" placeholder="confirmation du mot de passe">
-                </div>
-                <input type="submit" value="S'inscrire">
-            </form>
+            <?php endif; ?>
         </div>
     </main>
 </body>
