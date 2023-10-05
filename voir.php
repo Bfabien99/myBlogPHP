@@ -1,3 +1,28 @@
+<?php
+    if(!empty($_GET['article_id'])){
+        // Récupération de l'id
+        $id = $_GET['article_id'];
+        // On se connecte à la base de donnée
+        $connexion = mysqli_connect('localhost','root','','blog');
+        // On vérifie si la connexion s'est bien passée
+        if(!$connexion)
+        { 
+            die('Erreur de connexion à la Base de Donnée');
+        }
+
+        // On lance la requête de sélection des articles
+        $req = "SELECT * FROM Article WHERE id = '$id'";
+
+        // On exécute la requête
+        $sql_result = mysqli_query($connexion, $req);
+        if($sql_result){
+            // On récupère les données dans un tableau associatif
+            $article = mysqli_fetch_assoc($sql_result);
+        }else{
+            echo "OOps! Une erreur est survenue, veuillez réessayer plus tard!";
+        }
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -186,6 +211,7 @@
     </header>
     <main>
         <div id="content">
+            <?php if(!empty($article)):?>
             <div class="article">
                 <h3 class="title">Mon Article 1</h3>
                 <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
@@ -208,6 +234,11 @@
                     <p class="date">Le Mardi 10 0ctobre 2023</p>
                 </div>
             </div>
+            <?php else:?>
+                <div class="empty">
+                    <p>Aucun article</p>
+                </div>
+            <?php endif; ?>
         </div>
     </main>
 </body>

@@ -1,3 +1,24 @@
+<?php
+    // On se connecte à la base de donnée
+    $connexion = mysqli_connect('localhost','root','','blog');
+    // On vérifie si la connexion s'est bien passée
+    if(!$connexion)
+    { 
+        die('Erreur de connexion à la Base de Donnée');
+    }
+
+    // On lance la requête de sélection des articles
+    $req = "SELECT * FROM Article";
+
+    // On exécute la requête
+    $sql_result = mysqli_query($connexion, $req);
+    if($sql_result){
+        // On récupère les données dans un tableau associatif
+        $articles = mysqli_fetch_all($sql_result, MYSQLI_ASSOC);
+    }else{
+        echo "OOps! Une erreur est survenue, veuillez réessayer plus tard!";
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -202,44 +223,12 @@
     <main>
         <div id="content">
             <h3>Articles postés</h3>
+            <?php if(!empty($articles)): ?>
             <div id="posted">
                 <div class="article">
                     <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
                         alt="">
-                    <a class="title" href="voir.php">Mon Article 1</a>
-                    <div class="description">
-                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maiores, libero? Ipsa magnam, eaque
-                            consectetur fuga esse accusamus voluptatem, laudantium quidem nulla nihil maiores iure
-                            veniam, amet ratione facere expedita. Perspiciatis.</p>
-                        <p class="date">Mardi 10 Octobre 2023</p>
-                    </div>
-                </div>
-                <div class="article">
-                    <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
-                        alt="">
-                    <a class="title" href="voir.php">Mon Article 1</a>
-                    <div class="description">
-                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maiores, libero? Ipsa magnam, eaque
-                            consectetur fuga esse accusamus voluptatem, laudantium quidem nulla nihil maiores iure
-                            veniam, amet ratione facere expedita. Perspiciatis.</p>
-                        <p class="date">Mardi 10 Octobre 2023</p>
-                    </div>
-                </div>
-                <div class="article">
-                    <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
-                        alt="">
-                    <a class="title" href="voir.php">Mon Article 1</a>
-                    <div class="description">
-                        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maiores, libero? Ipsa magnam, eaque
-                            consectetur fuga esse accusamus voluptatem, laudantium quidem nulla nihil maiores iure
-                            veniam, amet ratione facere expedita. Perspiciatis.</p>
-                        <p class="date">Mardi 10 Octobre 2023</p>
-                    </div>
-                </div>
-                <div class="article">
-                    <img src="https://media.istockphoto.com/id/1319623001/photo/caesar-salad-with-crispy-bread-and-bacon-healthy-food-style.webp?s=1024x1024&w=is&k=20&c=gvTJfggHVKAWWCTdcEHIziVAfQmZJfgibmokDtLdiCc="
-                        alt="">
-                    <a class="title" href="voir.php">Mon Article 1</a>
+                    <a class="title" href="voir.php?art_id=<?php echo $article['id'];?>">Mon Article 1</a>
                     <div class="description">
                         <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Maiores, libero? Ipsa magnam, eaque
                             consectetur fuga esse accusamus voluptatem, laudantium quidem nulla nihil maiores iure
@@ -248,6 +237,11 @@
                     </div>
                 </div>
             </div>
+            <?php else: ?>
+                <div class="empty">
+                    <h4><span style='color:#f97586'>Aucun article trouvé !</span></h4>
+                </div>
+            <?php endif; ?>
         </div>
     </main>
 </body>

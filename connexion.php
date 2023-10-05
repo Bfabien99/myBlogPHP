@@ -1,3 +1,37 @@
+<?php
+    // On vérifie si les champs ne sont pas vides
+    if(!empty($_POST['email']) && !empty($_POST['password'])){
+        // On récupère les données postées
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        // On se connecte à la base de donnée
+        $connexion = mysqli_connect('localhost','root','','blog');
+        // On vérifie si la connexion s'est bien passée
+        if(!$connexion)
+        { 
+            die('Erreur de connexion à la Base de Donnée');
+        }
+
+        // On lance la requête de sélection de l'utilisateur
+        $req = "SELECT * FROM User ";
+        $req .= "WHERE password = '$password' AND email = '$email'";
+
+        // On exécute la requête
+        $sql_result = mysqli_query($connexion, $req);
+        if($sql_result){
+            // On récupère les données dans un tableau associatif
+            $user = mysqli_fetch_assoc($sql_result);
+            if($user){
+                var_dump($user);
+            }else{
+                echo "Email ou mot de passe incorrecte";
+            }
+        }else{
+            echo "OOps! Une erreur est survenue, veuillez réessayer plus tard!";
+        }
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -182,14 +216,14 @@
     <main>
         <div id="content">
             <h3>Connexion</h3>
-            <form action="./connecter/index.php" method="">
+            <form action="" method="post">
                 <div class="group">
                     <label for="email">Email</label>
-                    <input type="text" name="" id="email" placeholder="johnDoe@ex.ci">
+                    <input type="text" name="email" id="email" placeholder="johnDoe@ex.ci">
                 </div>
                 <div class="group">
                     <label for="password">Mot de passe</label>
-                    <input type="text" name="" id="password" placeholder="mot de passe">
+                    <input type="password" name="password" id="password" placeholder="mot de passe">
                 </div>
                 <input type="submit" value="Se connecter">
             </form>

@@ -11,7 +11,7 @@
         $cpassword = $_POST['cpassword'];
 
         // On se connecte à la base de donnée
-        $connexion = mysqli_connect('localhost','root','','myblog');
+        $connexion = mysqli_connect('localhost','root','','blog');
         // On vérifie si la connexion s'est bien passée
         if(!$connexion)
         { 
@@ -21,7 +21,7 @@
         $req = "INSERT INTO User(firstname, lastname, image, sex, email, password) ";
         $req .= "VALUES('$firstname', '$lastname', '$img_url', '$sex', '$email', '$password')";
 
-        $sql_result = mysqli_query($connexion, $sql);
+        $sql_result = mysqli_query($connexion, $req);
         if($sql_result){
             echo "Incription validé!";
         }else{
